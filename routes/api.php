@@ -15,8 +15,9 @@ use App\Http\Controllers\API\v1\UserController as UserControllerv1;
 */
 
 Route::prefix('v1')->group(function(){
-    Route::resource('users', UserControllerv1::class)->names('users')->only('index', 'show', 'update', 'store', 'destroy');
+    Route::resource('users', UserControllerv1::class )->names('users')->only(['index', 'show', 'store', 'update', 'destroy']);    
 });
+
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });

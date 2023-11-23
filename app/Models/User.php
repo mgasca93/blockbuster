@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Scopes\UserScope;
 
 class User extends Authenticatable
 {
@@ -45,4 +46,13 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected static function booted(): void
+    {
+        static::addGlobalScope( new UserScope );
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }

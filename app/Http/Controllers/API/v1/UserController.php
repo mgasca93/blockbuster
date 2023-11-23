@@ -20,7 +20,7 @@ class UserController extends Controller
     public function index()
     {
         try{
-            return UsersResource::collection( User::latest()->paginate(1) );
+            return UsersResource::collection( User::latest()->paginate(4) );
         }catch(Exception $e){
             return response()->json([
                 'status'        => 'failed',
@@ -58,7 +58,7 @@ class UserController extends Controller
 
             return response()->json([
                 'status'        => 'failed',
-                'message'       => 'Failed to set user.'
+                'message'       => 'Failed to set the user because there are now exists.'
             ], Response::HTTP_CONFLICT);
             
         }catch( Exception $e ){
@@ -101,16 +101,65 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update( Request $request, $slug )
     {
-        //
+        try{   
+            return response()->json( $request->all() );
+            /**
+             * Valido que el slug del usuario existe, de lo contrario notifico a la peticion
+             */       
+            $user = User::where('slug', $slug)->first();     
+            if(  is_object( $user ) && !is_null( $user ) ) :
+
+                $user->is_deleted = '1';
+                $user->save();
+                
+                return response()->json([
+                    'status'        => 'ok',
+                    'message'       => 'User deleted with success'
+                ], Response::HTTP_OK);
+            endif;
+            return response()->json([
+                'status'            => 'failed',
+                'message'           => "The requested user doesn't exist."
+            ], Response::HTTP_CONFLICT);
+        }catch( Exception $e ){
+            return response()->json([
+                'status'        => 'failed',
+                'message'       => 'Failed to delete user data.'
+            ], Response::HTTP_CONFLICT);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy( $slug )
     {
-        //
+        try{           
+            /**
+             * Valido que el slug del usuario existe, de lo contrario notifico a la peticion
+             */       
+            $user = User::where('slug', $slug)->first();     
+            if(  is_object( $user ) && !is_null( $user ) ) :
+
+                $user->is_deleted = '1';
+                $user->save();
+                
+                return response()->json([
+                    'status'        => 'ok',
+                    'message'       => 'User deleted with success'
+                ], Response::HTTP_OK);
+            endif;
+            return response()->json([
+                'status'            => 'failed',
+                'message'           => "The requested user doesn't exist."
+            ], Response::HTTP_CONFLICT);
+        }catch( Exception $e ){
+            return response()->json([
+                'status'        => 'failed',
+                'message'       => 'Failed to delete user data.'
+            ], Response::HTTP_CONFLICT);
+        }
     }
 }

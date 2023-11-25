@@ -20,7 +20,8 @@ class UsersResource extends JsonResource
             'fullname'      => $this->firstname . ' ' . $this->lastname,
             'slug'          => $this->slug,
             'e-mail'        => $this->email,
-            'created_at'    => $this->created_at->diffForHumans()
+            'created_at'    => $this->created_at->diffForHumans(),
+            'rol'           => $this->getRoleNames()->first()
         ];
     }
 }

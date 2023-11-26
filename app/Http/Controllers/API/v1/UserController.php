@@ -48,7 +48,7 @@ class UserController extends Controller
                     'slug'          => $slug,
                     'password'      => Hash::make( $request->password ),
                     'email'         => $request->email
-                ]);
+                ])->assignRole( 'General User' );
 
                 return response()->json([
                     'status'        => 'ok',

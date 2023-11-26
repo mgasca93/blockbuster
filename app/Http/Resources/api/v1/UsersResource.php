@@ -19,6 +19,7 @@ class UsersResource extends JsonResource
             'lastname'      => $this->lastname,
             'fullname'      => $this->firstname . ' ' . $this->lastname,
             'slug'          => $this->slug,
+            'url_unique'    => $request->root() . '/api/v1/users/' . $this->slug,
             'e-mail'        => $this->email,
             'created_at'    => $this->created_at->diffForHumans(),
             'rol'           => $this->getRoleNames()->first()

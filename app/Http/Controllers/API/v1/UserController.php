@@ -14,6 +14,19 @@ use Exception;
 
 class UserController extends Controller
 {
+
+    /**
+     * Valido permisos 
+     */
+    public function __construct()
+    {
+        $this->middleware( 'permission:api.users.index' )->only([ 'index' ]);
+        $this->middleware( 'permission:api.users.store')->only([ 'store' ]);
+        $this->middleware( 'permission:api.users.show' )->only([ 'show' ]);
+        $this->middleware( 'permission:api.users.update' )->only([ 'update' ]);
+        $this->middleware( 'permission:api.users.destroy' )->only([ 'destroy' ]);
+    }
+
     /**
      * Display a listing of the resource.
      */

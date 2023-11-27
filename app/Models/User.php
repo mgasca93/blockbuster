@@ -24,6 +24,7 @@ class User extends Authenticatable
         'lastname',
         'slug',
         'email',
+        'is_active',
         'password',
     ];
 
@@ -55,5 +56,18 @@ class User extends Authenticatable
     public function getRouteKeyName()
     {
         return 'slug';
+    }
+
+    /**
+     * Atributos del modelo
+     */
+    public function getFullNameAttribute()
+    {
+        return $this->firstname . ' ' . $this->lastname;
+    }
+
+    public function getEstatusAttribute()
+    {
+        return ( strcmp( $this->is_active, '1' ) == 0 ) ? 'Activo' : 'Inactivo';
     }
 }

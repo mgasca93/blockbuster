@@ -17,6 +17,10 @@ class RoleSeeder extends Seeder
     {
         DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         Role::truncate();
+        DB::statement('TRUNCATE permissions');
+        DB::statement('TRUNCATE model_has_roles');
+        DB::statement('TRUNCATE model_has_permissions');
+        DB::statement('TRUNCATE role_has_permissions');
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
 
         $user = Role::create([
@@ -28,9 +32,9 @@ class RoleSeeder extends Seeder
             'guard_name'    => 'web'
         ]);
 
-        Permission::create([ 'name' => 'api.users.index',   'guard_name'    => 'web'])->assignRole([ $user, $root ]);
+        Permission::create([ 'name' => 'api.users.index',   'guard_name'    => 'web'])->assignRole([ $root ]);
         Permission::create([ 'name' => 'api.users.store',   'guard_name'    => 'web'])->assignRole([ $root ]);
-        Permission::create([ 'name' => 'api.users.show',    'guard_name'    => 'web'])->assignRole([ $root ]);
+        Permission::create([ 'name' => 'api.users.show',    'guard_name'    => 'web'])->assignRole([ $user, $root ]);
         Permission::create([ 'name' => 'api.users.update',  'guard_name'    => 'web'])->assignRole([ $root ]);
         Permission::create([ 'name' => 'api.users.destroy', 'guard_name'    => 'web'])->assignRole([ $root ]);
     }

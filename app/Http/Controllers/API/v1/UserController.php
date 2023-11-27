@@ -85,19 +85,44 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($slug)
+    public function show( $slug )
     {
-        try{            
+        try{        
+            
             /**
-             * Valido que el slug del usuario existe, de lo contrario notifico a la peticion
+             * Valido el rol del usuario que realiza la peticion
              */
-            $user = User::where('slug', $slug)->first();
-            if(  is_object( $user ) && !is_null( $user ) ) :
-                return response()->json([
-                    'status'        => 'ok',
-                    'data'          => new UsersResource( $user )
-                ], Response::HTTP_OK);
+            if( request()->user()->hasRole('Super Admin') ) :
+                /**
+                 * Valido que el slug del usuario existe, de lo contrario notifico a la peticion
+                 */
+                $user = User::where('slug', $slug)->first();
+                if(  is_object( $user ) && !is_null( $user ) ) :
+                    return response()->json([
+                        'status'        => 'ok',
+                        'data'          => new UsersResource( $user )
+                    ], Response::HTTP_OK);
+                endif;
+            else : 
+                /**
+                 * Valido que el slug del usuario existe, de lo contrario notifico a la peticion
+                 */
+                $user = User::where('slug', $slug)
+                            ->where('id', request()->user()->id )
+                            ->first();
+                if(  is_object( $user ) && !is_null( $user ) ) :
+                    return response()->json([
+                        'status'        => 'ok',
+                        'data'          => new UsersResource( $user )
+                    ], Response::HTTP_OK);
+                else :
+                    return response()->json([
+                        'status'            => 'failed',
+                        'message'           => "You can not see information from other users."
+                    ], Response::HTTP_CONFLICT);
+                endif;
             endif;
+            
             return response()->json([
                 'status'            => 'failed',
                 'message'           => "The requested user doesn't exist."
@@ -117,19 +142,22 @@ class UserController extends Controller
     public function update( Request $request, $slug )
     {
         try{   
-            return response()->json( $request->all() );
             /**
              * Valido que el slug del usuario existe, de lo contrario notifico a la peticion
              */       
             $user = User::where('slug', $slug)->first();     
             if(  is_object( $user ) && !is_null( $user ) ) :
-
-                $user->is_deleted = '1';
+                if( $request->has('is_active') ) :
+                    $user->is_active = ( strcmp( $request->is_active, '1') == 0 ) ? '1' : '0';
+                endif;
+                if( $request->has('password') ) :
+                    $user->password = Hash::make( $request->password );
+                endif;
                 $user->save();
-                
                 return response()->json([
                     'status'        => 'ok',
-                    'message'       => 'User deleted with success'
+                    'message'       => 'User updated with success.',
+                    'data'          => new UsersResource( $user )
                 ], Response::HTTP_OK);
             endif;
             return response()->json([
